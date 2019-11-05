@@ -1,0 +1,13 @@
+/root/airflow/logs/scheduler/*/*.log {
+  size 3M
+  missingok
+  rotate 3
+  compress
+}
+
+/root/airflow/logs/*/*/*/*.log {
+  size 1M
+  missingok
+  rotate 3
+  compress
+}
