@@ -1,4 +1,5 @@
-# docker-images
-Useful docker images
+# Airflow Docker Image
 
-## Airflow
+This image is based on debian and Python 3.
+
+This is is a light image with only minimal airflow extensions.
