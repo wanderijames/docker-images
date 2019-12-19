@@ -64,16 +64,24 @@ RUN echo "*** Installing Livy ***" \
 RUN mkdir /opt/livy/logs
 
 
+# Install Pyspark ML dependencies
+RUN echo "*** Install Pyspark ML dependencies ***" \
+    && pip install \
+        pandas \
+        numpy
+
 # Install postgresql deps and drivers
 RUN echo "*** Installing Postgres psycopg2 and drivers ***" \
     && apk add \
         libpq \
         postgresql-dev \
     && wget https://jdbc.postgresql.org/download/postgresql-42.2.7.jar \
-    && mv postgresql-42.2.7.jar ${SPARK_HOME}/jars/postgresql-42.2.7.jar
+    && mv postgresql-42.2.7.jar ${SPARK_HOME}/jars/postgresql-42.2.7.jar \
+    && pip install psycopg2-binary
 
 # Install Python dev tools
 RUN echo "*** Installing Python dev stuff ***" \
+    && apk add linux-headers zeromq-dev \
     && pip install \
         tox \
-        psycopg2-binary
+        jupyter 
