@@ -4,7 +4,7 @@ ENV DAEMON_RUN=true
 ENV SPARK_VERSION=2.4.4
 ENV HADOOP_VERSION=2.7.7
 ENV SPARK_HADOOP_VERSION=2.7
-ENV SCALA_VERSION=2.12.6
+ENV SCALA_VERSION=2.11.12
 ENV SCALA_HOME=/opt/scala
 ENV SPARK_HOME /opt/spark
 ENV PYSPARK_PYTHON /usr/bin/python
@@ -66,9 +66,9 @@ RUN mkdir /opt/livy/logs
 
 # Install Pyspark ML dependencies
 RUN echo "*** Install Pyspark ML dependencies ***" \
-    && pip install Cython \
-    && pip install numpy \
-    && pip install pandas
+    && pip install \
+        pandas \
+        numpy
 
 # Install postgresql deps and drivers
 RUN echo "*** Installing Postgres psycopg2 and drivers ***" \
@@ -78,12 +78,6 @@ RUN echo "*** Installing Postgres psycopg2 and drivers ***" \
     && wget https://jdbc.postgresql.org/download/postgresql-42.2.7.jar \
     && mv postgresql-42.2.7.jar ${SPARK_HOME}/jars/postgresql-42.2.7.jar \
     && pip install psycopg2-binary
-
-
-# Install redshift deps and drivers
-RUN echo "*** Installing redshift drivers ***" \
-    && wget https://s3.amazonaws.com/redshift-downloads/drivers/jdbc/1.2.36.1060/RedshiftJDBC42-no-awssdk-1.2.36.1060.jar \
-    && mv RedshiftJDBC42-no-awssdk-1.2.36.1060.jar ${SPARK_HOME}/jars/RedshiftJDBC42-no-awssdk-1.2.36.1060.jar
 
 # Install Python dev tools
 RUN echo "*** Installing Python dev stuff ***" \
