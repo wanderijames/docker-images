@@ -66,10 +66,9 @@ RUN mkdir /opt/livy/logs
 
 # Install Pyspark ML dependencies
 RUN echo "*** Install Pyspark ML dependencies ***" \
-    && apk add linux-headers \
-    && pip install \
-        pandas \
-        numpy
+    && pip install Cython \
+    && pip install numpy \
+    && pip install pandas
 
 # Install postgresql deps and drivers
 RUN echo "*** Installing Postgres psycopg2 and drivers ***" \
@@ -88,7 +87,7 @@ RUN echo "*** Installing redshift drivers ***" \
 
 # Install Python dev tools
 RUN echo "*** Installing Python dev stuff ***" \
-    && apk add zeromq-dev \
+    && apk add linux-headers zeromq-dev \
     && pip install \
         tox \
         jupyter 
