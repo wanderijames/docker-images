@@ -1,0 +1,38 @@
+ARG DEBIAN_NAME=stretch
+FROM python:3.6.10-slim-${DEBIAN_NAME}
+
+
+RUN \
+    apt-get update \
+    && apt-get install -y \
+        make \
+        build-essential \
+        libssl1.0-dev \
+        zlib1g-dev \
+        libbz2-dev \
+        libreadline-dev \
+        libsqlite3-dev \
+        llvm \
+        libncurses5-dev \
+        libncursesw5-dev \
+        xz-utils \
+        tk-dev \
+        libffi-dev \
+        liblzma-dev \
+        python3-openssl \
+        curl \
+        git \
+    && apt-get autoclean
+
+RUN pip install tox tox-pyenv
+
+RUN echo "Installing pyenv" \
+    && curl -L https://github.com/pyenv/pyenv-installer/raw/master/bin/pyenv-installer | bash
+
+ENV PATH="/root/.pyenv/bin:$PATH"
+RUN touch /root/.bashrc \
+    && echo 'eval "$(pyenv init -)"' >> /root/.bashrc \
+    && echo 'eval "$(pyenv virtualenv-init -)"' >> /root/.bashrc
+
+RUN bash -c "pyenv install 2.7.16 && pyenv install 3.5.0 && pyenv install 3.7.6 && pyenv install 3.8.1"
+RUN pyenv local 2.7.16 3.5.0 3.7.6 3.8.1
