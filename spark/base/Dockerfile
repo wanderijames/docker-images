@@ -47,7 +47,7 @@ RUN echo "*** Installing Scala ***" \
 
 # Install Spark and adding pyspark by pip instead of env (ENV PYTHONPATH=$SPARK_HOME/python/:$PYTHONPATH)
 RUN echo "*** Installing Spark ***" \
-    && wget --no-verbose http://apache.mirror.iphh.net/spark/spark-${SPARK_VERSION}/spark-${SPARK_VERSION}-bin-hadoop${SPARK_HADOOP_VERSION}.tgz \
+    && wget --no-verbose https://archive.apache.org/dist/spark/spark-${SPARK_VERSION}/spark-${SPARK_VERSION}-bin-hadoop${SPARK_HADOOP_VERSION}.tgz \
     && tar -xvzf spark-${SPARK_VERSION}-bin-hadoop${SPARK_HADOOP_VERSION}.tgz \
     && mv spark-${SPARK_VERSION}-bin-hadoop${SPARK_HADOOP_VERSION} ${SPARK_HOME} \
     && rm spark-${SPARK_VERSION}-bin-hadoop${SPARK_HADOOP_VERSION}.tgz \
@@ -85,9 +85,34 @@ RUN echo "*** Installing redshift drivers ***" \
     && wget https://s3.amazonaws.com/redshift-downloads/drivers/jdbc/1.2.36.1060/RedshiftJDBC42-no-awssdk-1.2.36.1060.jar \
     && mv RedshiftJDBC42-no-awssdk-1.2.36.1060.jar ${SPARK_HOME}/jars/RedshiftJDBC42-no-awssdk-1.2.36.1060.jar
 
+
+# Install maven, AWS drivers, hadoop drivers. Hadoop AWS drivers version must be the same with hadoop commons
+RUN apk add maven openjdk8 \
+    \ 
+    && echo "*** Installing AWS drivers ***" \
+    && export AWS_DRIVER_VERSION=2.13.45 \
+    && wget https://github.com/aws/aws-sdk-java-v2/archive/${AWS_DRIVER_VERSION}.zip \
+    && apk add maven openjdk8 \
+    && unzip ${AWS_DRIVER_VERSION}.zip \
+    && cd aws-sdk-java-v2-${AWS_DRIVER_VERSION} \
+    && mvn clean install -P quick \
+    && cp aws-sdk-java/target/aws-sdk-java-${AWS_DRIVER_VERSION}.jar ${SPARK_HOME}/jars/ \
+    && cd .. \
+    && rm ${AWS_DRIVER_VERSION}.zip && rm -rf aws-sdk-java-v2-${AWS_DRIVER_VERSION} \
+    \
+    echo "*** Installing Hadoop AWS drivers ***" \
+    && export HADOOP_AWS_VERSION=${SPARK_HADOOP_VERSION}.3 \
+    && mvn dependency:get -Dartifact=org.apache.hadoop:hadoop-aws:${HADOOP_AWS_VERSION} \
+    && cp $HOME/.m2/repository/org/apache/hadoop/hadoop-aws/${HADOOP_AWS_VERSION}/hadoop-aws-${HADOOP_AWS_VERSION}.jar ${SPARK_HOME}/jars/ \
+    \
+    && apk del maven openjdk8 \
+    && rm -rf $HOME/.m2
+
+
 # Install Python dev tools
 RUN echo "*** Installing Python dev stuff ***" \
     && apk add linux-headers zeromq-dev \
     && pip install \
         tox \
+        psycopg2-binary \
         jupyter 
