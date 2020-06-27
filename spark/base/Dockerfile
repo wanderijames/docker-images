@@ -87,32 +87,19 @@ RUN echo "*** Installing redshift drivers ***" \
 
 
 # Install maven, AWS drivers, hadoop drivers. Hadoop AWS drivers version must be the same with hadoop commons
-RUN apk add maven openjdk8 \
+RUN cd ${SPARK_HOME}/jars \
     \ 
     && echo "*** Installing AWS drivers ***" \
-    && export AWS_DRIVER_VERSION=2.13.45 \
-    && wget https://github.com/aws/aws-sdk-java-v2/archive/${AWS_DRIVER_VERSION}.zip \
-    && apk add maven openjdk8 \
-    && unzip ${AWS_DRIVER_VERSION}.zip \
-    && cd aws-sdk-java-v2-${AWS_DRIVER_VERSION} \
-    && mvn clean install -P quick \
-    && cp aws-sdk-java/target/aws-sdk-java-${AWS_DRIVER_VERSION}.jar ${SPARK_HOME}/jars/ \
-    && cd .. \
-    && rm ${AWS_DRIVER_VERSION}.zip && rm -rf aws-sdk-java-v2-${AWS_DRIVER_VERSION} \
+    && export AWS_DRIVER_VERSION=1.7.4 \
+    && wget https://repo1.maven.org/maven2/com/amazonaws/aws-java-sdk/${AWS_DRIVER_VERSION}/aws-java-sdk-${AWS_DRIVER_VERSION}.jar \
     \
-    echo "*** Installing Hadoop AWS drivers ***" \
+    && echo "*** Installing Hadoop AWS drivers ***" \
     && export HADOOP_AWS_VERSION=${SPARK_HADOOP_VERSION}.3 \
-    && mvn dependency:get -Dartifact=org.apache.hadoop:hadoop-aws:${HADOOP_AWS_VERSION} \
-    && cp $HOME/.m2/repository/org/apache/hadoop/hadoop-aws/${HADOOP_AWS_VERSION}/hadoop-aws-${HADOOP_AWS_VERSION}.jar ${SPARK_HOME}/jars/ \
-    \
-    && apk del maven openjdk8 \
-    && rm -rf $HOME/.m2
-
+    && wget https://repo1.maven.org/maven2/org/apache/hadoop/hadoop-aws/${HADOOP_AWS_VERSION}/hadoop-aws-${HADOOP_AWS_VERSION}.jar
 
 # Install Python dev tools
 RUN echo "*** Installing Python dev stuff ***" \
     && apk add linux-headers zeromq-dev \
     && pip install \
         tox \
-        psycopg2-binary \
         jupyter 
