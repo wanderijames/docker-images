@@ -66,9 +66,9 @@ RUN mkdir /opt/livy/logs
 
 # Install Pyspark ML dependencies
 RUN echo "*** Install Pyspark ML dependencies ***" \
-    && pip install \
-        pandas \
-        numpy
+    && pip install Cython \
+    && pip install numpy \
+    && pip install pandas
 
 # Install postgresql deps and drivers
 RUN echo "*** Installing Postgres psycopg2 and drivers ***" \
