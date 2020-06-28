@@ -1,4 +1,4 @@
-FROM alpine:3.9
+FROM python:3.7-stretch
 
 ENV DAEMON_RUN=true
 ENV SPARK_VERSION=2.4.4
@@ -10,28 +10,21 @@ ENV SPARK_HOME /opt/spark
 ENV PYSPARK_PYTHON /usr/bin/python
 ENV LIVY_VERSION=0.6.0
 
-RUN apk add \
+RUN apt-get update && apt-get install -y --no-install-recommends \
     curl \
-    build-base \
+    build-essential \
     ca-certificates \
     gcc \
     gfortran \
     bash \
-    python3 \
-    python3-dev \
     jq \
     wget \
-    openjdk8-jre
+    openjdk-8-jdk \
+    openjdk-8-jre \
+    libzmq3-dev \
+    libpq-dev \
+    postgresql-server-dev-all
 
-# Ensure we have Python 3 and Pip
-RUN echo "*** Installing python and pip ****" \
-    && rm -f /usr/bin/python \
-    && rm -f /usr/bin/pip \
-    && ln -sf python3 /usr/bin/python \
-    && echo "**** Install pip ****" \
-    && python3 -m ensurepip \
-    && rm -r /usr/lib/python*/ensurepip \
-    && pip3 install --no-cache --upgrade pip setuptools wheel
 
 
 # Install Scala
@@ -72,9 +65,6 @@ RUN echo "*** Install Pyspark ML dependencies ***" \
 
 # Install postgresql deps and drivers
 RUN echo "*** Installing Postgres psycopg2 and drivers ***" \
-    && apk add \
-        libpq \
-        postgresql-dev \
     && wget https://jdbc.postgresql.org/download/postgresql-42.2.7.jar \
     && mv postgresql-42.2.7.jar ${SPARK_HOME}/jars/postgresql-42.2.7.jar \
     && pip install psycopg2-binary
@@ -99,7 +89,6 @@ RUN cd ${SPARK_HOME}/jars \
 
 # Install Python dev tools
 RUN echo "*** Installing Python dev stuff ***" \
-    && apk add linux-headers zeromq-dev \
     && pip install \
         tox \
         jupyter 
