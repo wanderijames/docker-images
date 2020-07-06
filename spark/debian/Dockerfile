@@ -7,7 +7,8 @@ ENV SPARK_HADOOP_VERSION=2.7
 ENV SCALA_VERSION=2.11.12
 ENV SCALA_HOME=/opt/scala
 ENV SPARK_HOME /opt/spark
-ENV PYSPARK_PYTHON /usr/bin/python
+ENV PYSPARK_PYTHON /usr/local/bin/python
+ENV PYSPARK_DRIVER_PYTHON /usr/local/bin/python
 ENV LIVY_VERSION=0.6.0
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
