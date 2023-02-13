@@ -2,6 +2,9 @@ FROM ubuntu:latest
 
 MAINTAINER James Wanderi <wanderikinyanjui@gmail.com>
 
+ENV TZ="Europe/London"
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+
 RUN apt-get update \
     && apt-get install -y software-properties-common \
     && add-apt-repository ppa:deadsnakes/ppa -y \
@@ -12,11 +15,11 @@ RUN apt-get update \
       python3.7-dev \
       python3.7-tk \
       python3.7-distutils \
-    && curl https://bootstrap.pypa.io/get-pip.py | python3.7 \
     && rm -rf /tmp/* \
     && ln -sf /usr/bin/python3.7 /usr/bin/python \
     && ln -sf /usr/bin/python3.7 /usr/bin/python3
 
+RUN apt-get --no-install-recommends -y install python3-pip
 
 RUN pip install -U pip \
     && pip install \
